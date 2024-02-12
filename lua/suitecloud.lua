@@ -25,10 +25,10 @@ function M.run(cmd)
     vim.notify('Invalid Suitecloud Command: ' .. cmd, vim.log.levels.ERROR)
     return
   end
-  local width = vim.o.columns / 2
-  local height = vim.o.lines / 2
-  local row = height / 2
-  local col = width / 2
+  local width = math.floor(vim.o.columns / 2)
+  local height = math.floor(vim.o.lines / 2)
+  local row = math.floor(height / 2)
+  local col = math.floor(width / 2)
   vim.api.nvim_open_win(bufnr, true,
     {
       relative = 'editor',
