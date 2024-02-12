@@ -3,10 +3,6 @@ local M = {}
 local bufnr = vim.api.nvim_create_buf(false, true)
 
 local function on_event(_, lines, event)
-  -- if (event == 'stdout') then
-  --   vim.fn.setqflist({}, 'r', { title = 'Suitecloud', lines = lines })
-  --   vim.cmd('copen')
-  -- end
   if (event == 'stdout') then
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
   end
@@ -29,8 +25,8 @@ function M.run(cmd)
     vim.notify('Invalid Suitecloud Command: ' .. cmd, vim.log.levels.ERROR)
     return
   end
-  local width = vim.api.nvim_win_get_width(0) / 2
-  local height = vim.api.nvim_win_get_height(0) / 2
+  local width = vim.o.columns / 2
+  local height = vim.o.lines / 2
   local row = height / 2
   local col = width / 2
   vim.api.nvim_open_win(bufnr, true,
@@ -42,9 +38,9 @@ function M.run(cmd)
       col = col,
       style = 'minimal',
       border = 'double',
-      title =
-      'Suitecloud'
-    });
+      title = 'Suitecloud <' .. cmd .. '>'
+    }
+  );
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'q', [[<CMD>quit<CR>]], {})
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { 'Suitecloud operation in progress...' })
 end
