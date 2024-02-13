@@ -11,10 +11,12 @@ local winnr = -1
 local executable_name = 'suitecloud'
 
 --- Callback function used for io with external processes
---- @param _channel integer Channel id that is had event triggered
 --- @param lines table Lines from the external process
 --- @param event string Name of the event that triggered the callback
-local function on_event(_channel, lines, event)
+local function on_event(_, lines, event)
+  if (event == 'stderr') then
+    vim.notify(table.concat(lines, ''), vim.log.levels.ERROR)
+  end
   if (event == 'stdout') then
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
   end
