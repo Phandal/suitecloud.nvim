@@ -61,6 +61,7 @@ function M.run(cmd)
       }
     );
   else
+    vim.api.nvim_win_set_config(winnr, { title = 'Suitecloud <' .. cmd .. '>' })
     vim.api.nvim_win_set_buf(winnr, bufnr)
   end
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'q', [[<CMD>quit<CR>]], {})
