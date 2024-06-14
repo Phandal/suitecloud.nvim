@@ -1,5 +1,8 @@
 vim.api.nvim_create_user_command('Suitecloud', function(opts)
-    require('suitecloud').run(unpack(opts.fargs))
+    local err_msg = require('suitecloud').run(unpack(opts.fargs))
+    if (err_msg) then
+      vim.notify('[SuiteCloud] ' .. err_msg, vim.log.levels.ERROR)
+    end
   end,
   {
     nargs = '*',
