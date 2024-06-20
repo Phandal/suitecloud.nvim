@@ -1,6 +1,7 @@
 local util = require('suitecloud.util')
 local api = require('suitecloud.api')
 local win = require('suitecloud.window')
+local buf = require('suitecloud.buffer')
 local M = {}
 
 ---@type integer
@@ -12,31 +13,29 @@ local winnr = -1
 ---@type string
 local executable_name = 'suitecloud'
 
-local function try_create_buffer()
-  if (not vim.api.nvim_buf_is_valid(bufnr)) then
-    bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'q', [[<CMD>quit<CR>]], {})
-  end
-end
-
 function M.run(cmd)
   if (not util.executable_exists(executable_name)) then
-    vim.notify(executable_name .. ' executable not found in PATH', vim.log.levels.ERROR);
-    return
+    return ([[']] .. executable_name .. [[' executable not found in PATH. Try 'npm install -g @oracle/suitecloud-cli']])
   end
 
   if (cmd == 'focus') then
     return api.focus(winnr)
   end
 
-  try_create_buffer()
+  -- All commands below require a buffer, which in turn requires a window
+  bufnr = buf.try_create_buffer(bufnr)
+  assert(bufnr, 'failed to create buffer')
+  buf.set_title(bufnr, cmd)
+
+  winnr = win.try_open_win(winnr, bufnr)
+  assert(winnr, 'failed to create window')
+
   if (cmd == 'deploy') then
-    winnr = win.try_open_win('deploy', winnr, bufnr)
     return api.deploy(executable_name, bufnr)
   elseif (cmd == 'preview') then
-    winnr = win.try_open_win(cmd, winnr, bufnr)
     return api.preview(executable_name, bufnr)
   else
+    vim.api.nvim_win_close(winnr, true)
     return 'invalid Suitecloud Command: ' .. cmd
   end
 end
